@@ -12,8 +12,7 @@ export const metadata: Metadata = {
     "AI-powered World War 3 probability meter. Updated every 6 hours using live geopolitical news and Claude AI analysis.",
 };
 
-// Revalidate every 6 hours (matches cron schedule)
-export const revalidate = 21600;
+export const dynamic = "force-dynamic";
 
 async function getPrediction(): Promise<Partial<WW3Prediction>> {
   try {

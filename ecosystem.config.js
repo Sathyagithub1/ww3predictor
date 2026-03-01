@@ -9,7 +9,7 @@ module.exports = {
       name: "ww3predictor",
       script: "node_modules/.bin/next",
       args: "start",
-      cwd: "/home/u767522705/public_html/ww3predictor",
+      cwd: "/home/u767522705/domains/claps.app/ww3predictor",
       instances: 1,
       autorestart: true,
       watch: false,

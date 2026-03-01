@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   ],
 };
 
-export const revalidate = 3600; // ISR — 1 hour
+export const dynamic = "force-dynamic";
 
 const CATEGORY_LABELS: Record<string, string> = {
   all: "All Conflicts",
