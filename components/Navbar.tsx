@@ -9,7 +9,6 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/news", label: "News" },
   { href: "/blogs", label: "Blog" },
-  { href: "/about", label: "About" },
 ];
 
 export default function Navbar() {
