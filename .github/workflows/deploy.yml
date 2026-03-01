@@ -32,11 +32,12 @@ jobs:
       - name: Deploy to Hostinger via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
+          host: 185.187.241.251
+          port: 65002
+          username: u767522705
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd ~/public_html/ww3predictor
+            cd /home/u767522705/public_html/ww3predictor
             git pull origin main
             npm ci --omit=dev
             npm run build
