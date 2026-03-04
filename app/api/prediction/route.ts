@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { supabase, WW3Prediction } from "@/lib/supabase";
+import { createServerClient, WW3Prediction } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const { data, error } = await supabase
+  const { data, error } = await createServerClient()
     .from("ww3_predictions")
     .select("*")
     .order("created_at", { ascending: false })

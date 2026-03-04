@@ -30,7 +30,6 @@ export default function Footer() {
                 { href: "/", label: "Home" },
                 { href: "/news", label: "Conflict News" },
                 { href: "/blogs", label: "Blog" },
-                { href: "/about", label: "About" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link

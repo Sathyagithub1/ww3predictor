@@ -5,6 +5,7 @@ import ThreatFactors from "@/components/ThreatFactors";
 import NewsTicker from "@/components/NewsTicker";
 import AdSlot from "@/components/AdSlot";
 import { WW3Prediction } from "@/lib/supabase";
+import { fetchTrendingNews, NewsArticle } from "@/lib/newsapi";
 
 export const metadata: Metadata = {
   title: "WW3 Predictor — Real-Time AI Threat Assessment",
@@ -23,7 +24,7 @@ async function getPrediction(): Promise<Partial<WW3Prediction>> {
         : "http://localhost:3000");
 
     const res = await fetch(`${baseUrl}/api/prediction`, {
-      next: { revalidate: 21600 },
+      cache: "no-store",
     });
 
     if (!res.ok) throw new Error("Failed to fetch prediction");
@@ -57,7 +58,10 @@ function timeAgo(dateStr: string): string {
 }
 
 export default async function HomePage() {
-  const prediction = await getPrediction();
+  const [prediction, trendingArticles] = await Promise.all([
+    getPrediction(),
+    fetchTrendingNews(6),
+  ]);
 
   const score = prediction.score ?? 52;
   const factors = prediction.key_factors ?? [];
@@ -178,20 +182,35 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Headlines used */}
-        {newsSample.length > 0 && (
+        {/* Trending news */}
+        {trendingArticles.length > 0 && (
           <div className="mt-10">
             <h2 className="text-gray-400 text-sm uppercase tracking-wider font-semibold mb-4">
-              Headlines Used in This Analysis
+              Trending
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {newsSample.map((headline, i) => (
-                <div
-                  key={i}
-                  className="bg-gray-900/40 border border-gray-800 rounded-lg px-4 py-2.5 text-sm text-gray-400"
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {trendingArticles.map((article) => (
+                <a
+                  key={article.url}
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gray-900/40 border border-gray-800 rounded-lg p-4 flex flex-col gap-2 hover:border-red-800/60 hover:bg-gray-900/70 transition-colors group"
                 >
-                  {headline}
-                </div>
+                  <span className="text-xs text-red-400 font-medium uppercase tracking-wide">
+                    {article.source.name}
+                  </span>
+                  <p className="text-sm text-gray-200 font-medium leading-snug group-hover:text-white line-clamp-3">
+                    {article.title}
+                  </p>
+                  <span className="text-xs text-gray-500 mt-auto">
+                    {new Date(article.publishedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                </a>
               ))}
             </div>
           </div>
