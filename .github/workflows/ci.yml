@@ -13,18 +13,36 @@ permissions:
   contents: read
 
 jobs:
-  bootstrap-lockfile:
-    # One-off: the repo has no lockfile, so resolve one (metadata only, no
-    # install scripts) to commit; replaced by the real CI in the next commit.
+  build:
+    name: Lint, build, typecheck (Node 22)
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Offline CI. lib/supabase.ts constructs a client at import time, so the
+      # build needs *some* URL/key; these are obviously-fake placeholders on a
+      # non-resolvable .invalid host. NEWSAPI_KEY / ANTHROPIC_API_KEY /
+      # CRON_SECRET are deliberately NOT set, so no news, LLM or cron path can
+      # reach an external service from CI.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.invalid
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-not-a-secret
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-      - uses: actions/upload-artifact@v4
-        with:
-          name: package-lock
-          path: package-lock.json
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install (frozen)
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Typecheck
+        run: npx tsc --noEmit
